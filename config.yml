@@ -7,18 +7,38 @@ aliases:
     user: api user
     list-milestones: |-
         !gh api --paginate graphql -F owner=':owner' -F name=':repo' -f query='
-            query($per_page: Int = 100, $endCursor: String, $name: String!, $owner: String!) {
-              repository(owner: $owner, name: $name) {
-                milestones(first: $per_page, after: $endCursor, states: OPEN, orderBy: {field:CREATED_AT, direction:DESC}) {
-                  nodes {
-                    title
-                    number
-                  }
-                  pageInfo {
-                    hasNextPage
-                    endCursor
+              query($per_page: Int = 100, $endCursor: String, $owner: String!, $name: String!) {
+                repository(owner: $owner, name: $name) {
+                  milestones(first: $per_page, after: $endCursor, states: OPEN, orderBy: {field:CREATED_AT, direction:DESC}) {
+                    nodes {
+                      title
+                      number
+                    }
+                    pageInfo {
+                      hasNextPage
+                      endCursor
+                    }
                   }
                 }
               }
-            }
-          ' | jq -r ".data.repository.milestones.nodes[] | [.number,.title] | @tsv"
+            ' | jq -r ".data.repository.milestones.nodes[] | [.number,.title] | @tsv"
+    pr-files-changed: |-
+        !gh api --paginate graphql -F owner=':owner' -F name=':repo' -F "pr=$1" -f query='
+              query($per_page: Int = 100, $endCursor: String, $pr: Int!, $owner: String!, $name: String!) {
+                repository(owner: $owner, name: $name) {
+                  pullRequest(number: $pr) {
+                    files(first: $per_page, after: $endCursor) {
+                      edges {
+                        node {
+                          path
+                        }
+                      }
+                      pageInfo {
+                        endCursor
+                        hasNextPage
+                      }
+                    }
+                  }
+                }
+              }
+            ' | jq -r ".data.repository.pullRequest.files.edges[] | [.node.path] | @tsv"
