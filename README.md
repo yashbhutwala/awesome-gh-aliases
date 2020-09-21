@@ -1,7 +1,7 @@
 <!-- omit in toc -->
 # awesome-gh-aliases
 
-A curated aliases and api scripts for GitHub's official command line tool [gh](https://github.com/cli/cli).  Essentially, a collection of useful combinations of [gh api](https://cli.github.com/manual/gh_api) and [gh alias](https://cli.github.com/manual/gh_alias)!
+A curated aliases and api scripts for GitHub's official command line tool [gh](https://github.com/cli/cli).  Essentially, a collection of useful combinations of [gh api](https://cli.github.com/manual/gh_api) and [gh alias](https://cli.github.com/manual/gh_alias)!  To get started quickly, you can either [copy the config provided here](#starter-config) or use the script provided [here to generate aliases in your own config](#script-to-generate-the-aliases).
 
 <!-- omit in toc -->
 ## Table of Contents
