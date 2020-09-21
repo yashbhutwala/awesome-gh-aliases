@@ -60,6 +60,22 @@ gh alias set --shell 'pr-files-changed' \
         }
       }
     '"'"' | jq -r ".data.repository.pullRequest.files.edges[] | [.node.path] | @tsv"'
+#
+# list-repos: list repositories of the supplied user
+gh alias set --shell 'list-repos' \
+  'gh api --paginate graphql -F owner="$1" -f query='"'"'
+      query($owner: String!, $per_page: Int = 100, $endCursor: String) {
+        repositoryOwner(login: $owner) {
+          repositories(first: $per_page, after: $endCursor, ownerAffiliations: OWNER) {
+            nodes {
+              nameWithOwner
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    '"'"' | jq -r ".data.repositoryOwner.repositories.nodes[] | [.nameWithOwner] | @tsv"'
 ################################################################################
-
-
