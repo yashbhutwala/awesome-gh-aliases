@@ -58,3 +58,22 @@ aliases:
                 }
               }
             ' | jq -r ".data.repositoryOwner.repositories.nodes[] | [.nameWithOwner] | @tsv"
+    search-repos: |-
+        !gh api graphql -F per_page="$1" -F q="$2" -f query='
+              query($q: String!, $per_page: Int = 10, $endCursor: String) {
+                search(query: $q, type: REPOSITORY, first: $per_page, after: $endCursor) {
+                  nodes {
+                    ...on Repository {
+                      nameWithOwner
+                      stargazers {
+                        totalCount
+                      }
+                    }
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
+                  }
+                }
+              }
+            ' | jq -r ".data.search.nodes[] | [.nameWithOwner,.stargazers.totalCount] | @tsv"
