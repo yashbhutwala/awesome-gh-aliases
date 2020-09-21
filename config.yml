@@ -1,0 +1,24 @@
+git_protocol: ssh
+aliases:
+    pv: pr view
+    bugs: issue list --label="bugs"
+    epicsBy: issue list --author="$1" --label="epic"
+    igrep: '!gh issue list --label="$1" | grep -i $2'
+    user: api user
+    list-milestones: |-
+        !gh api --paginate graphql -F owner=':owner' -F name=':repo' -f query='
+            query($per_page: Int = 100, $endCursor: String, $name: String!, $owner: String!) {
+              repository(owner: $owner, name: $name) {
+                milestones(first: $per_page, after: $endCursor, states: OPEN, orderBy: {field:CREATED_AT, direction:DESC}) {
+                  nodes {
+                    title
+                    number
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
+                  }
+                }
+              }
+            }
+          ' | jq -r ".data.repository.milestones.nodes[] | [.number,.title] | @tsv"
